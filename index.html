@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Hand It Off</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+  /* Single-theme dark on purpose: this is read on phones in a dark ballroom.
+     Two hundred white screens lighting up at once is its own problem. */
+  :root {
+    --ground:      #0F1115;
+    --surface:     #191C22;
+    --surface-lit: #1F232B;
+    --line:        #2C313B;
+    --ink:         #ECEEF2;
+    --muted:       #8C94A3;
+    --accent:      #D9A441;
+    --accent-lit:  #E8B65B;
+    --accent-ink:  #171204;
+    --bad:         #E4736A;
+
+    --sans: "IBM Plex Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --serif: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 460px;
+    margin: 0 auto;
+    padding-inline: 22px;
+    /* env(safe-area-inset-bottom) keeps the button clear of the iPhone home bar */
+    padding-block: 40px calc(40px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(30px, 8.5vw, 38px);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 10px 0 0;
+  }
+
+  .sub {
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  form { display: flex; flex-direction: column; gap: 20px; }
+
+  .field { display: flex; flex-direction: column; gap: 7px; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  input, textarea {
+    width: 100%;
+    /* 17px, never below 16px: Safari zooms the whole page in on focus
+       for anything smaller, and the attendee has to pinch back out. */
+    font: 400 17px/1.45 var(--sans);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 13px 14px;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color .14s ease, background-color .14s ease;
+  }
+
+  textarea { min-height: 108px; resize: vertical; }
+
+  input::placeholder, textarea::placeholder { color: #5D6472; }
+
+  input:focus, textarea:focus {
+    outline: none;
+    background: var(--surface-lit);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217, 164, 65, .18);
+  }
+
+  button {
+    font: 600 17px/1 var(--sans);
+    letter-spacing: 0.01em;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: 0;
+    border-radius: 10px;
+    min-height: 56px;
+    cursor: pointer;
+    transition: background-color .14s ease, opacity .14s ease;
+  }
+
+  button:hover:not(:disabled) { background: var(--accent-lit); }
+  button:focus-visible { outline: 3px solid var(--accent-lit); outline-offset: 3px; }
+  button:disabled { opacity: .55; cursor: default; }
+
+  .fineprint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .error {
+    margin: 0;
+    font-size: 14px;
+    color: var(--bad);
+  }
+
+  /* Confirmation replaces the form in place. */
+  .done { display: flex; flex-direction: column; gap: 14px; }
+
+  .done h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .done p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .echo {
+    border-left: 2px solid var(--accent);
+    padding: 2px 0 2px 14px;
+    color: var(--ink);
+    font-size: 15px;
+  }
+
+  .fade { animation: rise .32s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .fade { animation: none; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">PIMDCON 2026</p>
+    <h1>What&rsquo;s one recurring task you&rsquo;d love to hand off?</h1>
+    <p class="sub">Twenty seconds. Mark reads every one of these.</p>
+  </header>
+
+  <!-- The form posts for real, into a hidden frame so the page stays put.
+       A form POST is not subject to cross-origin permission checks the way
+       a scripted request is, so there is nothing here for a browser or a
+       conference network to refuse. -->
+  <iframe name="sink" id="sink" title="Submission target" hidden></iframe>
+
+  <form id="capture" method="post" target="sink" novalidate
+        action="https://script.google.com/macros/s/AKfycbxModD-L9RLqbvX7Qsotkz6CPsQ_m4fz-sQAdABxVtlxqc-0Ne2o5gDtQrSNbudTQlUOQ/exec">
+    <input type="hidden" name="source" value="pimdcon-2026-keynote">
+
+    <div class="field">
+      <label for="name">Your name</label>
+      <!-- autocomplete + type are what summon the iPhone contact chip.
+           One tap on it fills this field and the email together. -->
+      <input id="name" name="name" type="text" autocomplete="name"
+             autocapitalize="words" enterkeyhint="next" required>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email"
+             inputmode="email" autocapitalize="off" autocorrect="off"
+             spellcheck="false" enterkeyhint="next" required>
+    </div>
+
+    <div class="field">
+      <label for="task">The task</label>
+      <textarea id="task" name="task" autocomplete="off" enterkeyhint="done"
+                placeholder="Prior auth letters. Same three paragraphs, twenty times a week."></textarea>
+    </div>
+
+    <p class="error" id="error" hidden></p>
+    <button id="submit" type="submit">Send it to Mark</button>
+  </form>
+
+  <div class="done fade" id="done" hidden>
+    <h2>Got it.</h2>
+    <p id="doneName"></p>
+    <p class="echo" id="doneEcho" hidden></p>
+  </div>
+
+</div>
+
+<script>
+  var form    = document.getElementById("capture");
+  var button  = document.getElementById("submit");
+  var errorEl = document.getElementById("error");
+  var sink    = document.getElementById("sink");
+
+  var sent    = false;  // a real submission is in flight
+  var settled = false;  // the thank-you has already been shown
+
+  function fail(message) {
+    errorEl.textContent = message;
+    errorEl.hidden = false;
+    button.disabled = false;
+    button.textContent = "Send it to Mark";
+  }
+
+  function succeed() {
+    if (settled) { return; }
+    settled = true;
+
+    var name = document.getElementById("name").value.trim();
+    var task = document.getElementById("task").value.trim();
+
+    document.getElementById("doneName").textContent =
+      "Thanks, " + name.split(" ")[0] + ". Your answer is in.";
+
+    if (task) {
+      var echo = document.getElementById("doneEcho");
+      echo.textContent = "“" + task + "”";
+      echo.hidden = false;
+    }
+
+    form.hidden = true;
+    document.getElementById("done").hidden = false;
+  }
+
+  // The frame fires "load" once when the page first renders, before anyone
+  // has submitted anything. Only a load that follows a real submission
+  // means the Sheet has answered.
+  sink.addEventListener("load", function () {
+    if (sent) { succeed(); }
+  });
+
+  form.addEventListener("submit", function (event) {
+    errorEl.hidden = true;
+
+    var name  = document.getElementById("name").value.trim();
+    var email = document.getElementById("email").value.trim();
+
+    if (!name) {
+      event.preventDefault();
+      return fail("Add your name so Mark knows who to reply to.");
+    }
+    // Deliberately loose: a strict pattern rejects real addresses, and there
+    // is no time on a conference floor to argue with a form.
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      event.preventDefault();
+      return fail("That email looks incomplete. Check it and send again.");
+    }
+
+    // Valid. Do NOT preventDefault: the browser performs the real POST into
+    // the hidden frame from here.
+    sent = true;
+    button.disabled = true;
+    button.textContent = "Sending…";
+
+    // Nobody stares at "Sending…" for longer than this, whatever the network
+    // or the frame decides to do. The Sheet is the record, not this screen.
+    setTimeout(succeed, 5000);
+  });
+</script>
+</body>
+</html>
