@@ -30,6 +30,11 @@
 
   * { box-sizing: border-box; }
 
+  /* A class that sets `display` outranks the browser's own [hidden] rule,
+     which would make `el.hidden = true` silently do nothing on the form and
+     on the confirmation block. This puts the attribute back in charge. */
+  [hidden] { display: none !important; }
+
   body {
     margin: 0;
     background: var(--ground);
@@ -131,6 +136,15 @@
   button:focus-visible { outline: 3px solid var(--accent-lit); outline-offset: 3px; }
   button:disabled { opacity: .55; cursor: default; }
 
+  /* Confirmed state: the button empties out and holds the accent as an
+     outline, so "Sent!" reads as a result rather than another thing to tap. */
+  button.sent, button.sent:disabled {
+    opacity: 1;
+    background: transparent;
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
   .fineprint {
     margin: 0;
     font-size: 13px;
@@ -231,6 +245,7 @@
   var sink    = document.getElementById("sink");
 
   var sent    = false;  // a real submission is in flight
+  var marked  = false;  // the button has flipped to "Sent!"
   var settled = false;  // the thank-you has already been shown
 
   function fail(message) {
@@ -260,11 +275,22 @@
     document.getElementById("done").hidden = false;
   }
 
+  // Button flips to "Sent!", then the thank-you replaces the form a beat
+  // later. The pause is deliberate: the eye needs a moment to register the
+  // change before the whole screen swaps out.
+  function markSent() {
+    if (marked) { return; }
+    marked = true;
+    button.textContent = "Sent!";
+    button.classList.add("sent");
+    setTimeout(succeed, 800);
+  }
+
   // The frame fires "load" once when the page first renders, before anyone
   // has submitted anything. Only a load that follows a real submission
   // means the Sheet has answered.
   sink.addEventListener("load", function () {
-    if (sent) { succeed(); }
+    if (sent) { markSent(); }
   });
 
   form.addEventListener("submit", function (event) {
@@ -290,9 +316,10 @@
     button.disabled = true;
     button.textContent = "Sending…";
 
-    // Nobody stares at "Sending…" for longer than this, whatever the network
-    // or the frame decides to do. The Sheet is the record, not this screen.
-    setTimeout(succeed, 5000);
+    // Google's reply lands inside a frame it may refuse to render, so the
+    // load event above cannot be relied on. The POST is already gone by this
+    // point either way, and the Sheet is the record, not this screen.
+    setTimeout(markSent, 1200);
   });
 </script>
 </body>
