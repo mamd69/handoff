@@ -84,6 +84,8 @@
 
   form { display: flex; flex-direction: column; gap: 20px; }
 
+  .contact-heading { margin: 0; font-size: 17px; font-weight: 600; }
+
   .field { display: flex; flex-direction: column; gap: 7px; }
 
   label {
@@ -205,19 +207,21 @@
         action="https://script.google.com/macros/s/AKfycbxModD-L9RLqbvX7Qsotkz6CPsQ_m4fz-sQAdABxVtlxqc-0Ne2o5gDtQrSNbudTQlUOQ/exec">
     <input type="hidden" name="source" value="pimdcon-2026-keynote">
 
+    <h2 class="contact-heading">Stay in touch with Mark (optional)</h2>
+
     <div class="field">
-      <label for="name">Your name</label>
+      <label for="name">Your name (optional)</label>
       <!-- autocomplete + type are what summon the iPhone contact chip.
            One tap on it fills this field and the email together. -->
       <input id="name" name="name" type="text" autocomplete="name"
-             autocapitalize="words" enterkeyhint="next" required>
+             autocapitalize="words" enterkeyhint="next">
     </div>
 
     <div class="field">
-      <label for="email">Email</label>
+      <label for="email">Email (optional)</label>
       <input id="email" name="email" type="email" autocomplete="email"
              inputmode="email" autocapitalize="off" autocorrect="off"
-             spellcheck="false" enterkeyhint="next" required>
+             spellcheck="false" enterkeyhint="next">
     </div>
 
     <div class="field">
@@ -263,7 +267,7 @@
     var task = document.getElementById("task").value.trim();
 
     document.getElementById("doneName").textContent =
-      "Thanks, " + name.split(" ")[0] + ". Your answer is in.";
+      (name ? "Thanks, " + name.split(" ")[0] + "." : "Thanks.") + " Your answer is in.";
 
     if (task) {
       var echo = document.getElementById("doneEcho");
@@ -296,16 +300,11 @@
   form.addEventListener("submit", function (event) {
     errorEl.hidden = true;
 
-    var name  = document.getElementById("name").value.trim();
     var email = document.getElementById("email").value.trim();
 
-    if (!name) {
-      event.preventDefault();
-      return fail("Add your name so Mark knows who to reply to.");
-    }
     // Deliberately loose: a strict pattern rejects real addresses, and there
     // is no time on a conference floor to argue with a form.
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
       event.preventDefault();
       return fail("That email looks incomplete. Check it and send again.");
     }
