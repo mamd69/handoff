@@ -192,7 +192,6 @@
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">PIMDCON 2026</p>
     <h1>What&rsquo;s one recurring task you&rsquo;d love to hand off?</h1>
     <p class="sub">Twenty seconds. Mark reads every one of these.</p>
   </header>
@@ -205,7 +204,7 @@
 
   <form id="capture" method="post" target="sink" novalidate
         action="https://script.google.com/macros/s/AKfycbxModD-L9RLqbvX7Qsotkz6CPsQ_m4fz-sQAdABxVtlxqc-0Ne2o5gDtQrSNbudTQlUOQ/exec">
-    <input type="hidden" name="source" value="pimdcon-2026-keynote">
+    <input type="hidden" name="source" id="source" value="keynote">
 
     <h2 class="contact-heading">Stay in touch with Mark (optional)</h2>
 
@@ -247,6 +246,11 @@
   var button  = document.getElementById("submit");
   var errorEl = document.getElementById("error");
   var sink    = document.getElementById("sink");
+
+  // Each event's link carries its own tag, e.g. ?s=pediatric-ceo-2026,
+  // so one page and one Sheet serve every talk.
+  var tag = new URLSearchParams(location.search).get("s");
+  if (tag) { document.getElementById("source").value = tag.slice(0, 100); }
 
   var sent    = false;  // a real submission is in flight
   var marked  = false;  // the button has flipped to "Sent!"
